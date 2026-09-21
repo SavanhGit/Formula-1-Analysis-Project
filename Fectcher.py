@@ -4,7 +4,7 @@ import time
 # Intial greeting and race location selection
 print("Welcome to the F1 Data Fetcher!")
 time.sleep(1)
-year = int(input("What year are you looking for(2023 or later)?: "))
+year = int(input("What year are you looking for(2023-Present)?: "))
 if year < 2023:
     print("Please enter a year of 2023 or later.")
     exit()
@@ -55,9 +55,21 @@ driver_number = int(driver_num_input)
 driver_url = f"https://api.openf1.org/v1/drivers?driver_number={driver_number}&session_key={sessions_key}"
 request = requests.get(driver_url).json()
 
-while 
-lap_url = f"https://api.openf1.org/v1/laps?driver_number={driver_number}&session_key={sessions_key}"
+meeting_key = request[0]["meeting_key"]
+
+lap_url = "https://api.openf1.org/v1/laps"
+params = {
+    "session_key": sessions_key,
+    "driver_number": driver_number
+}
+response = requests.get(lap_url, params=params)
+laps = response.json()
+Position_url = f"https://api.openf1.org/v1/position?meeting_key={meeting_key}&driver_number={driver_number}&position<=3"
+
 print(f"\nDriver: {request[0]['full_name']}")
-sorted_by_lap = sorted(request, key=lambda x: x["lap_number"])
-for lap in sorted_by_lap:
-    print(f"Lap: {lap['lap_number']} Pos: {lap['lap_position'] } Time: {lap['lap_time']} Tyre: {lap['tyre_type']} Stint: {lap['stint_number']}")
+
+for lap in laps:
+    lap_number = lap["lap_number"]
+    lap_time = lap["lap_duration"]
+
+    print(f"Lap: {lap_number}, Time: {lap_time}")
